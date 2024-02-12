@@ -9,8 +9,7 @@ output: html_document
 #knitr::opts_chunk$set(echo = TRUE)
 # Load necessary libraries
 library(readr)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 ```
 
 ## R Markdown
@@ -21,7 +20,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```{r Pokemon}
 
-Pokemon <- read_csv("C:/Users/notso/OneDrive/UoC-Data Science/D602/Project/Pokemon.csv")
+Pokemon <- read_csv("Pokemon.csv")
 #View(Pokemon)
 summary(Pokemon)
 str(Pokemon)
@@ -36,20 +35,23 @@ Combat_Power <- function(attack, special_atk, defense, special_def, hp) {
 }
 
 Pokemon <- Pokemon %>%
-  mutate(isDragon = ifelse(Pokemon$`Type 1` == "Dragon" | Pokemon$`Type 2` == "Dragon", 1, 0)) %>%
+  mutate(isDragon = ifelse(`Type 1` == "Dragon" | `Type 2` == "Dragon", 1, 0)) %>%
+  mutate(isDragon = ifelse(is.na(isDragon), 0, isDragon)) %>%
   rowwise() %>%
   mutate(CP = Combat_Power(Attack, `Sp. Atk`, Defense, `Sp. Def`, HP))
-
-Pokemon <- Pokemon %>% mutate(CP = Combat_Power(Pokemon$Attack, Pokemon$`Sp. Atk`, Pokemon$Defense, Pokemon$`Sp. Def`, Pokemon$HP))
-
-
+# Print the first few rows to check if CP values vary
 head(Pokemon)
 
 ```
 
 ```{r}
+glimpse(Pokemon)
+```
+
+
+```{r}
 # Perform regression analysis
-model <- lm(CP ~ Attack + Defense + HP + isDragon, data = Pokemon)
+model <- lm(Attack ~ isDragon, data = Pokemon)
 
 # Print regression summary
 summary(model)
@@ -59,8 +61,14 @@ summary(model)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, echo=FALSE}
+ggplot(Pokemon, aes(Total,CP)) + 
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+```{r}
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
