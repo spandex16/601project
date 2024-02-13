@@ -1,0 +1,66 @@
+---
+title: "Pokemon - Dragon - CP - Analysis"
+author: "Alan Cheun"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(tidyr)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r Pokemon}
+
+Pokemon <- read_csv("C:/Users/notso/OneDrive/UoC-Data Science/D602/Project/Pokemon.csv")
+#View(Pokemon)
+summary(Pokemon)
+str(Pokemon)
+```
+
+```{r}
+Combat_Power <- function(attack, special_atk, defense, special_def, hp) {
+  total_a <- attack + special_atk
+  total_d <- defense + special_def
+  numerator <- floor(total_a * (total_d^0.5) * (hp^0.5) * (0.667934^2))  # Assuming `math.floor` is similar to `floor` in R
+  return(floor(max(10, numerator / 10)))
+}
+
+Pokemon <- Pokemon %>%
+  mutate(isDragon = ifelse(Pokemon$`Type 1` == "Dragon" | Pokemon$`Type 2` == "Dragon", 1, 0)) %>%
+  rowwise() %>%
+  mutate(CP = Combat_Power(Attack, `Sp. Atk`, Defense, `Sp. Def`, HP))
+
+Pokemon <- Pokemon %>% mutate(CP = Combat_Power(Pokemon$Attack, Pokemon$`Sp. Atk`, Pokemon$Defense, Pokemon$`Sp. Def`, Pokemon$HP))
+
+
+head(Pokemon)
+
+```
+
+```{r}
+# Perform regression analysis
+model <- lm(CP ~ Attack + Defense + HP + isDragon, data = Pokemon)
+
+# Print regression summary
+summary(model)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
