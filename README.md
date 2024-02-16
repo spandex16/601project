@@ -6,6 +6,8 @@ https://docs.google.com/presentation/d/1IWNI1zmTcvfd4WU1S5XwMY2SHHHw9x8D/edit?us
 
 Dataset: https://www.kaggle.com/datasets/abcsds/pokemon
 
+Run all cells on Pokemon EDA Final for correct visualisations and data wrangling.
+
 Pokémon – Insights into Game Mechanics 
 Team: Pikachu {Alan Cheun, Naz Shalamo, Spandan Biswas} 
 
